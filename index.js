@@ -8,4 +8,4 @@ app.get('/foo', (req,res) => {
     res.send('foo page');
 })
 
-app.listen(3000);
+app.listen(process.env.PORT || 5000);
