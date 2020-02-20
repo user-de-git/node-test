@@ -1,11 +1,37 @@
-let app = require('express')();
+let express = require('express')
+let app = express();
+let bodyParser = require('body-parser');
+let path = require('path');
 
-app.get('/', (req,res) => {
-    res.send('Home page');
-})
+const expressHbs = require('express-handlebars');
+app.engine(
+    'hbs',
+    expressHbs({
+      layoutsDir: 'views/layouts/',
+      defaultLayout: 'main-layout',
+      extname: 'hbs'
+    })
+  );
+  app.set('view engine', 'hbs');
+  app.set('views', 'views');
 
-app.get('/foo', (req,res) => {
-    res.send('foo page');
-})
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false })) // middleware
 
-app.listen(process.env.PORT || 5000);
+// parse application/json
+app.use(bodyParser.json()) // middleware
+
+let playerRoutes = require('./routes/peoples');
+
+app.use(express.static(path.join(__dirname,'public')));
+
+app.get('/', function (req,res) {
+    res.render('home', { pageTitle: 'People App', heading: 'Welcome to People App'});
+});
+
+app.use(playerRoutes);
+
+app.listen(process.env.PORT || 3000, () => console.log('Server ready @ port 3000'))
+
+
+
